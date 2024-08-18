@@ -1,0 +1,11 @@
+[package]
+name = "BlueBGG"
+version = "0.1.0"
+authors = ["Matthew Thompson <mat@matthewjthompson.co.uk>"]
+description = "A Discord bot for interacting with the BoardGameGeek API"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/MatthewThompson/BlueBGG"
+
+[dependencies]
+tokio = { version = "1" }
