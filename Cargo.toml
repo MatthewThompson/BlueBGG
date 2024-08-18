@@ -1,5 +1,5 @@
 [package]
-name = "BlueBGG"
+name = "blue_bgg"
 version = "0.1.0"
 authors = ["Matthew Thompson <mat@matthewjthompson.co.uk>"]
 description = "A Discord bot for interacting with the BoardGameGeek API"
@@ -8,4 +8,5 @@ license = "MIT"
 repository = "https://github.com/MatthewThompson/BlueBGG"
 
 [dependencies]
-tokio = { version = "1" }
+serenity = "0.12"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
