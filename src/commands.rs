@@ -1,4 +1,4 @@
-use arnak::{Collection, CollectionItemBrief, CollectionItemType, CollectionQueryParams};
+use arnak::{Collection, CollectionItemBrief, CollectionItemType, CollectionQueryParams, GameQueryParams};
 use poise::serenity_prelude::{
     Colour, CreateEmbed, CreateEmbedAuthor, CreateEmbedFooter, Timestamp,
 };
@@ -45,10 +45,28 @@ pub async fn game_info(
     ctx: Context<'_>,
     #[description = "An ID of a game in the BGG database."] game_id: u64,
 ) -> Result<(), Error> {
-    let reply_content = format!("Getting game {}...Not yet implemented", game_id);
+    let game = ctx.data().board_game_api.game().get_by_id(game_id, GameQueryParams::new()).await;
+    let game = match game {
+        Ok(game) => game,
+        e => {
+            println!("oops: {:?}", e);
+            return Ok(());
+        },
+    };
+
+    let description_truncated: String =  game.description.chars().take(242).collect();
+    let embed_description: String = match description_truncated.len() {
+        0..=280 => description_truncated,
+        _ => format!("{}...", description_truncated.trim_end()),
+    };
+
     let embed = create_base_embed()
-        .author(CreateEmbedAuthor::new("Some game"))
-        .description(&reply_content);
+        .author(CreateEmbedAuthor::new(game.name).url(format!("https://boardgamegeek.com/boardgame/{}", game.id)))
+        .description(embed_description)
+        .thumbnail(game.thumbnail)
+        .field("Rating", format!("{:.1}", game.stats.average_rating), true)
+        .field("Player Count", format!("{}-{}", game.min_players, game.max_players), true)
+        .field("Playing Time (mins)", format!("{}-{}", game.min_playtime.num_minutes(), game.max_playtime.num_minutes()), true);
     let reply = CreateReply::default().embed(embed);
 
     ctx.send(reply).await?;
